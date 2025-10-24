@@ -1,0 +1,8 @@
+# Dependencias
+node_modules/
+
+# Documentación generada localmente
+/docs
+
+# Vercel (Credenciales locales)
+.vercel/

@@ -1,0 +1,24 @@
+{
+  "name": "ci-cd-daw-project",
+  "version": "1.0.0",
+  "description": "Proyecto básico para demostrar CI/CD con GitHub Actions, JSDoc y Vercel.",
+  "main": "src/main.js",
+  "scripts": {
+    "test": "jest",
+    "ci:test": "npm test",
+    "docs": "jsdoc -c jsdoc.conf.json"
+  },
+  "keywords": [
+    "daw",
+    "ci",
+    "cd",
+    "github-actions",
+    "vercel"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "jsdoc": "^4.0.2"
+  }
+}
