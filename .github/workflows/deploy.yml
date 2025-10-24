@@ -63,7 +63,7 @@ jobs:
       - name: Despliegue de la Documentacion en Vercel
         # Los secretos se usan aquí para la autenticación
         # --cwd ./docs asegura que despliega tu documentación HTML
-        run: vercel deploy --prebuilt --public --prod --cwd ./docs --token=${{ secrets.VERCEL_TOKEN }}
+        run: vercel deploy --prebuilt --public --prod --cwd ./docs --prebuilt-dir ./docs/ --token=${{ secrets.VERCEL_TOKEN }}
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
