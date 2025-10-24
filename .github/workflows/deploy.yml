@@ -1,0 +1,69 @@
+name: CI/CD - Documentacion y Despliegue en Vercel
+
+on:
+  push:
+    branches:
+      - main  # Se dispara en cada push a la rama principal
+  workflow_dispatch: # Permite ejecución manual
+
+jobs:
+  # Job 1: Integración Continua (CI) - Pruebas y Documentacion
+  ci-build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Codigo
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20' 
+
+      - name: Instalar dependencias
+        run: npm install
+
+      # 1. Verificar que contiene JavaScript
+      - name: Verificar Archivos JavaScript
+        run: find . -name "*.js" | grep -q ".js"
+        
+      # 2. Ejecutar Pruebas Unitarias (Si falla, el flujo se detiene aquí)
+      - name: Ejecutar Pruebas Unitarias
+        run: npm run ci:test 
+
+      # 3. & 4. Generar Documentacion (Usando el script 'docs' que definiste)
+      - name: Generar Documentacion con JSDoc
+        run: npm run docs
+
+      # Subir la carpeta 'docs' como artefacto para que el siguiente Job la use
+      - name: Subir Artifacts para Despliegue
+        uses: actions/upload-artifact@v4
+        with:
+          name: vercel-deploy-docs
+          path: docs 
+
+  # Job 2: Despliegue Continuo (CD) - Publicar en Vercel
+  deploy-to-vercel:
+    # Se ejecuta SOLO si el Job anterior fue exitoso
+    needs: ci-build-test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Codigo
+        uses: actions/checkout@v4
+        
+      - name: Descargar Documentacion Generada
+        uses: actions/download-artifact@v4
+        with:
+          name: vercel-deploy-docs
+          path: docs 
+
+      - name: Instalar Vercel CLI
+        run: npm install --global vercel@latest
+
+      # 5. Desplegar automaticamente en Vercel
+      - name: Despliegue de la Documentacion en Vercel
+        # Los secretos se usan aquí para la autenticación
+        # --cwd ./docs asegura que despliega tu documentación HTML
+        run: vercel deploy --prebuilt --public --prod --cwd ./docs --token=${{ secrets.VERCEL_TOKEN }}
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
